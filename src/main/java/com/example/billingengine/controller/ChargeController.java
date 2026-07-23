@@ -1,7 +1,7 @@
 package com.example.billingengine.controller;
 
-import com.example.billingengine.entity.ChargeRequest;
-import com.example.billingengine.model.Transaction;
+import com.example.billingengine.dto.ChargeRequest;
+import com.example.billingengine.entity.Transaction;
 import com.example.billingengine.service.BillingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

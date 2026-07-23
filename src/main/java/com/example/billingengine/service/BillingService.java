@@ -1,7 +1,7 @@
 package com.example.billingengine.service;
 
-import com.example.billingengine.model.Transaction;
-import com.example.billingengine.model.TransactionStatus;
+import com.example.billingengine.entity.Transaction;
+import com.example.billingengine.entity.TransactionStatus;
 import com.example.billingengine.repository.TransactionRepository;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;

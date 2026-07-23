@@ -1,4 +1,4 @@
-package com.example.billingengine.model;
+package com.example.billingengine.entity;
 
 public enum TransactionStatus {
     SUCCEEDED,

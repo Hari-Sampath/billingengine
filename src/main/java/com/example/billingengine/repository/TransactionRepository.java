@@ -1,7 +1,7 @@
 package com.example.billingengine.repository;
 
-import com.example.billingengine.model.Transaction;
-import com.example.billingengine.model.TransactionStatus;
+import com.example.billingengine.entity.Transaction;
+import com.example.billingengine.entity .TransactionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

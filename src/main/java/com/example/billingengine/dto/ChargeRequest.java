@@ -1,4 +1,4 @@
-package com.example.billingengine.entity;
+package com.example.billingengine.dto;
 
 import lombok.Data;
 
