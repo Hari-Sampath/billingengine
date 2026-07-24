@@ -17,7 +17,6 @@ public class FailedPaymentScheduler {
     private final TransactionRepository transactionRepository;
     private final EmailService emailService;
 
-    // Runs every day at 9:00 AM server time
     @Scheduled(cron = "*/30 * * * * *")
     public void checkFailedPayments() {
         List<Transaction> failedUnnotified =

@@ -36,7 +36,7 @@ public class BillingService {
             tx.setStatus(TransactionStatus.SUCCEEDED);
 
         } catch (StripeException e) {
-            // Card declined, or any other Stripe-side failure — we still save the attempt
+            e.printStackTrace();
             tx.setStatus(TransactionStatus.FAILED);
         }
 
