@@ -21,7 +21,6 @@ public class StripeService {
         ChargeCreateParams params = ChargeCreateParams.builder()
                 .setAmount(amountInCents)
                 .setCurrency(currency)
-                .setCustomer(customerId)
                 .setSource(testToken) // e.g. "tok_visa" (succeeds) or "tok_chargeDeclined" (fails)
                 .build();
         return Charge.create(params);
