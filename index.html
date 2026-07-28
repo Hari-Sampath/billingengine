@@ -306,8 +306,31 @@
 <body>
 
 <div class="app">
+
+  <div id="screen-login">
+    <div class="panel" style="max-width:360px;margin:80px auto 0;">
+      <div class="panel-head"><h2>Sign in</h2></div>
+      <div class="form-panel">
+        <div class="field">
+          <label for="login-email">Admin email</label>
+          <input type="email" id="login-email" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" autocomplete="current-password" />
+        </div>
+        <div class="form-actions" style="justify-content:stretch;">
+          <button class="btn" id="btn-login" style="width:100%;">Sign in</button>
+        </div>
+      </div>
+      <div id="login-status"></div>
+    </div>
+  </div>
+
+  <div id="main-app" class="hidden">
   <header class="top">
     <div class="brand"><span class="dot">●</span>&nbsp; billing-engine</div>
+    <button class="btn secondary" id="btn-logout" style="padding:6px 12px;font-size:12px;">Sign out</button>
   </header>
 
   <div id="breadcrumb" class="breadcrumb"></div>
@@ -396,14 +419,86 @@
       <div id="new-charge-status"></div>
     </div>
   </div>
+
+  </div><!-- /#main-app -->
 </div>
 
 <script>
   const API_BASE = 'http://localhost:8080/api';
 
   let currentCustomer = null; // { id, email }
+  let authToken = localStorage.getItem('authToken');
 
   const el = (id) => document.getElementById(id);
+
+  function authHeaders(extra = {}) {
+    return { ...extra, 'X-Auth-Token': authToken || '' };
+  }
+
+  function handleUnauthorized() {
+    localStorage.removeItem('authToken');
+    authToken = null;
+    showLogin();
+  }
+
+  function showLogin() {
+    el('screen-login').classList.remove('hidden');
+    el('main-app').classList.add('hidden');
+  }
+
+  function showMainApp() {
+    el('screen-login').classList.add('hidden');
+    el('main-app').classList.remove('hidden');
+  }
+
+  function checkAuthAndInit() {
+    if (authToken) {
+      showMainApp();
+      loadCustomers();
+    } else {
+      showLogin();
+    }
+  }
+
+  async function submitLogin() {
+    const email = el('login-email').value.trim();
+    const password = el('login-password').value;
+    const statusBox = el('login-status');
+    const btn = el('btn-login');
+
+    if (!email || !password) {
+      statusBox.innerHTML = '<div class="status-line err">✕ enter email and password</div>';
+      return;
+    }
+
+    btn.disabled = true;
+    statusBox.innerHTML = '<div class="status-line mono">checking…</div>';
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      if (!res.ok) throw new Error('Invalid email or password');
+      const data = await res.json();
+      authToken = data.token;
+      localStorage.setItem('authToken', authToken);
+      showMainApp();
+      loadCustomers();
+    } catch (err) {
+      statusBox.innerHTML = `<div class="status-line err">✕ ${err.message}</div>`;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('authToken');
+    authToken = null;
+    currentCustomer = null;
+    showLogin();
+  }
 
   function formatMoney(cents, currency) {
     return `${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`;
@@ -452,7 +547,8 @@
     list.innerHTML = '<div class="loading">reading ledger…</div>';
 
     try {
-      const res = await fetch(`${API_BASE}/customers`);
+      const res = await fetch(`${API_BASE}/customers`, { headers: authHeaders() });
+      if (res.status === 401) return handleUnauthorized();
       if (!res.ok) throw new Error(`Server responded ${res.status}`);
       const customers = await res.json();
       renderCustomerList(customers);
@@ -520,7 +616,8 @@
     list.innerHTML = '<div class="loading">loading transactions…</div>';
 
     try {
-      const res = await fetch(`${API_BASE}/customers/${id}/transactions`);
+      const res = await fetch(`${API_BASE}/customers/${id}/transactions`, { headers: authHeaders() });
+      if (res.status === 401) return handleUnauthorized();
       if (!res.ok) throw new Error(`Server responded ${res.status}`);
       const txs = await res.json();
       renderTransactionList(txs);
@@ -574,9 +671,10 @@
     try {
       const res = await fetch(`${API_BASE}/customers/${currentCustomer.id}/charge`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ amountInCents, currency, testToken })
       });
+      if (res.status === 401) return handleUnauthorized();
       if (!res.ok) throw new Error(`Server responded ${res.status}`);
       const tx = await res.json();
 
@@ -619,9 +717,10 @@
     try {
       const res = await fetch(`${API_BASE}/charges`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ email, amountInCents, currency, testToken })
       });
+      if (res.status === 401) return handleUnauthorized();
       if (!res.ok) throw new Error(`Server responded ${res.status}`);
       await res.json();
 
@@ -638,8 +737,10 @@
   el('btn-cancel-new').onclick = loadCustomers;
   el('btn-submit-new').onclick = submitNewCharge;
   el('btn-submit-charge').onclick = submitChargeToCurrentCustomer;
+  el('btn-login').onclick = submitLogin;
+  el('btn-logout').onclick = logout;
 
-  loadCustomers();
+  checkAuthAndInit();
 </script>
 
 </body>
