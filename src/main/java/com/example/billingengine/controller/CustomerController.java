@@ -2,19 +2,20 @@ package com.example.billingengine.controller;
 
 import com.example.billingengine.dto.ChargeRequest;
 import com.example.billingengine.dto.StripeCustomerSummary;
-import com.example.billingengine.dto.StripeTransactionResponse;
 import com.example.billingengine.entity.Transaction;
+import com.example.billingengine.entity.TransactionStatus;
+import com.example.billingengine.repository.TransactionRepository;
 import com.example.billingengine.service.BillingService;
 import com.example.billingengine.service.StripeService;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Charge;
 import com.stripe.model.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -24,44 +25,39 @@ public class CustomerController {
     private StripeService stripeService;
 
     @Autowired
+    private TransactionRepository transactionRepository;
+
+    @Autowired
     private BillingService billingService;
 
-    // Now sourced live from Stripe, not the local `customers` table
     @GetMapping
     public List<StripeCustomerSummary> getAllCustomers() throws StripeException {
         List<Customer> stripeCustomers = stripeService.listCustomers().getData();
+        List<Transaction> allTransactions = transactionRepository.findAll();
 
-        return stripeCustomers.stream()
+        // Dedupe: keep only the first Stripe customer record seen per email
+        Map<String, Customer> uniqueByEmail = new LinkedHashMap<>();
+        for (Customer c : stripeCustomers) {
+            uniqueByEmail.putIfAbsent(c.getEmail(), c);
+        }
+
+        return uniqueByEmail.values().stream()
                 .map(c -> {
-                    try {
-                        List<Charge> charges = stripeService.listChargesForCustomer(c.getId()).getData();
-                        boolean hasFailed = charges.stream().anyMatch(ch -> !"succeeded".equals(ch.getStatus()));
-                        return new StripeCustomerSummary(c.getId(), c.getEmail(), charges.size(), hasFailed);
-                    } catch (StripeException e) {
-                        return new StripeCustomerSummary(c.getId(), c.getEmail(), 0, false);
-                    }
+                    List<Transaction> txs = allTransactions.stream()
+                            .filter(t -> c.getEmail().equalsIgnoreCase(t.getCustomerEmail()))
+                            .toList();
+                    boolean hasFailed = txs.stream().anyMatch(t -> t.getStatus() == TransactionStatus.FAILED);
+                    return new StripeCustomerSummary(c.getId(), c.getEmail(), txs.size(), hasFailed);
                 })
                 .toList();
     }
 
-    // Now sourced live from Stripe's Charges, not the local `transactions` table
     @GetMapping("/{stripeCustomerId}/transactions")
-    public List<StripeTransactionResponse> getCustomerTransactions(@PathVariable String stripeCustomerId) throws StripeException {
-        List<Charge> charges = stripeService.listChargesForCustomer(stripeCustomerId).getData();
-
-        return charges.stream()
-                .map(ch -> new StripeTransactionResponse(
-                        ch.getId(),
-                        ch.getCustomer(),
-                        ch.getAmount(),
-                        ch.getCurrency(),
-                        "succeeded".equals(ch.getStatus()) ? "SUCCEEDED" : "FAILED",
-                        Instant.ofEpochSecond(ch.getCreated()).toString()
-                ))
-                .toList();
+    public List<Transaction> getCustomerTransactions(@PathVariable String stripeCustomerId) throws StripeException {
+        Customer stripeCustomer = Customer.retrieve(stripeCustomerId);
+        return transactionRepository.findByCustomerEmailOrderByCreatedAtDesc(stripeCustomer.getEmail());
     }
 
-    // Charging still writes locally too — the scheduler/email feature depends on that
     @PostMapping("/{stripeCustomerId}/charge")
     public ResponseEntity<Transaction> chargeCustomer(@PathVariable String stripeCustomerId, @RequestBody ChargeRequest request) {
         Transaction tx = billingService.chargeExistingStripeCustomer(stripeCustomerId, request.getAmountInCents(), request.getCurrency(), request.getTestToken());

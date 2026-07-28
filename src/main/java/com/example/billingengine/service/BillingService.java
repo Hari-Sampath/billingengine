@@ -71,4 +71,24 @@ public class BillingService {
 
         return transactionRepository.save(tx);
     }
+    public Transaction chargeExistingStripeCustomer(String stripeCustomerId, long amountInCents, String currency, String testToken) {
+        Customer localCustomer = getOrCreateLocalCustomerByStripeId(stripeCustomerId);
+        return chargeCustomer(localCustomer, amountInCents, currency, testToken);
+    }
+
+    private Customer getOrCreateLocalCustomerByStripeId(String stripeCustomerId) {
+        return customerRepository.findByStripeCustomerId(stripeCustomerId).orElseGet(() -> {
+            try {
+                com.stripe.model.Customer stripeCustomer = com.stripe.model.Customer.retrieve(stripeCustomerId);
+
+                Customer newCustomer = new Customer();
+                newCustomer.setEmail(stripeCustomer.getEmail());
+                newCustomer.setStripeCustomerId(stripeCustomerId);
+                newCustomer.setCreatedAt(Instant.now());
+                return customerRepository.save(newCustomer);
+            } catch (StripeException e) {
+                throw new RuntimeException("Failed to retrieve Stripe customer", e);
+            }
+        });
+    }
 }

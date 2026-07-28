@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     List<Transaction> findByStatusAndFailureEmailSentFalse(TransactionStatus status);
-    List<Transaction> findByCustomerIdOrderByCreatedAtDesc(Long customerId);
+    List<Transaction> findByCustomerEmailOrderByCreatedAtDesc(String customerEmail);
 }
