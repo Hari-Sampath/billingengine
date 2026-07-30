@@ -3,23 +3,55 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Billing Engine — Ledger</title>
+<title>Billing Engine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  // Apply saved theme before first paint, to avoid a flash of the wrong theme
+  (function () {
+    const saved = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
 <style>
-  :root {
-    --bg: #0B0D10;
-    --panel: #14171B;
-    --panel-hover: #191D22;
-    --border: #23272C;
-    --text: #E7E9EA;
-    --muted: #7D848B;
-    --muted-2: #52585E;
-    --green: #3ECF8E;
-    --green-dim: #1B3A2C;
-    --red: #E5484D;
-    --red-dim: #3A1E1F;
-    --focus: #5B8DEF;
+  :root[data-theme="dark"] {
+    --bg: #000000;
+    --bg-elevated: #0a0a0b;
+    --panel: rgba(28, 28, 30, 0.72);
+    --panel-solid: #1c1c1e;
+    --panel-hover: #242426;
+    --border: rgba(255,255,255,0.09);
+    --text: #f5f5f7;
+    --muted: #98989d;
+    --muted-2: #636366;
+    --blue: #2997ff;
+    --green: #30d158;
+    --green-dim: rgba(48,209,88,0.14);
+    --red: #ff453a;
+    --red-dim: rgba(255,69,58,0.14);
+    --amber: #ff9f0a;
+    --amber-dim: rgba(255,159,10,0.14);
+    --shadow: 0 20px 60px rgba(0,0,0,0.45);
+  }
+
+  :root[data-theme="light"] {
+    --bg: #f5f5f7;
+    --bg-elevated: #fbfbfd;
+    --panel: rgba(255,255,255,0.78);
+    --panel-solid: #ffffff;
+    --panel-hover: #f0f0f2;
+    --border: rgba(0,0,0,0.08);
+    --text: #1d1d1f;
+    --muted: #6e6e73;
+    --muted-2: #a1a1a6;
+    --blue: #0071e3;
+    --green: #248a3d;
+    --green-dim: rgba(36,138,61,0.10);
+    --red: #d70015;
+    --red-dim: rgba(215,0,21,0.10);
+    --amber: #b25000;
+    --amber-dim: rgba(178,80,0,0.10);
+    --shadow: 0 20px 50px rgba(0,0,0,0.08);
   }
 
   * { box-sizing: border-box; }
@@ -28,79 +60,94 @@
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font-family: 'Inter', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.25s ease, color 0.25s ease;
   }
 
-  .mono { font-family: 'IBM Plex Mono', monospace; }
-
-  a, button { font-family: inherit; }
-
-  ::selection { background: var(--focus); color: #fff; }
+  .mono { font-family: 'IBM Plex Mono', 'SF Mono', monospace; }
+  ::selection { background: var(--blue); color: #fff; }
 
   *:focus-visible {
-    outline: 2px solid var(--focus);
+    outline: 2px solid var(--blue);
     outline-offset: 2px;
+    border-radius: 4px;
   }
 
   .app {
-    max-width: 780px;
+    max-width: 860px;
     margin: 0 auto;
-    padding: 40px 24px 80px;
+    padding: 48px 24px 100px;
   }
 
   header.top {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
-    margin-bottom: 28px;
+    margin-bottom: 8px;
   }
 
   .brand {
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
   }
 
-  .brand .dot {
-    color: var(--green);
-  }
-
-  .breadcrumb {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 24px;
+  .header-actions {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
+  }
+
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--panel-solid);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+
+  .icon-btn:hover { background: var(--panel-hover); }
+  .icon-btn:active { transform: scale(0.94); }
+
+  .breadcrumb {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 20px 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     flex-wrap: wrap;
   }
 
-  .breadcrumb .seg {
-    cursor: pointer;
-  }
-
+  .breadcrumb .seg { cursor: pointer; }
   .breadcrumb .seg:hover { color: var(--text); }
-  .breadcrumb .seg.current {
-    color: var(--text);
-    cursor: default;
-  }
-
+  .breadcrumb .seg.current { color: var(--text); font-weight: 600; cursor: default; }
   .breadcrumb .sep { color: var(--muted-2); }
 
   .panel {
     background: var(--panel);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 18px;
     overflow: hidden;
+    box-shadow: var(--shadow);
   }
 
   .panel-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 18px;
+    padding: 18px 22px;
     border-bottom: 1px solid var(--border);
   }
 
@@ -108,7 +155,7 @@
     font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.07em;
     color: var(--muted);
     margin: 0;
   }
@@ -117,7 +164,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 18px;
+    padding: 18px 22px;
     border-bottom: 1px solid var(--border);
     cursor: pointer;
     transition: background 0.12s ease;
@@ -125,90 +172,61 @@
 
   .row:last-child { border-bottom: none; }
   .row:hover { background: var(--panel-hover); }
-  .row:focus-visible { background: var(--panel-hover); }
-
   .row.static { cursor: default; }
   .row.static:hover { background: none; }
 
-  .row-main {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
-  }
+  .row-main { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 
   .row-email {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .row-sub {
-    font-size: 12px;
-    color: var(--muted);
-  }
+  .row-sub { font-size: 12.5px; color: var(--muted); }
 
-  .row-side {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
-  }
+  .row-side { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
   .pill {
-    font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    padding: 3px 8px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 4px 10px;
     border-radius: 999px;
     text-transform: uppercase;
   }
 
   .pill.succeeded { background: var(--green-dim); color: var(--green); }
   .pill.failed { background: var(--red-dim); color: var(--red); }
+  .pill.mail-sent { background: var(--green-dim); color: var(--green); }
+  .pill.mail-pending { background: var(--amber-dim); color: var(--amber); }
 
-  .chevron { color: var(--muted-2); font-size: 14px; }
+  .chevron { color: var(--muted-2); font-size: 16px; }
 
-  .amount {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 14px;
-    font-weight: 500;
-    text-align: right;
-  }
+  .amount { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; text-align: right; }
 
-  .empty {
-    padding: 48px 24px;
-    text-align: center;
-    color: var(--muted);
-  }
-
-  .empty .glyph {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 22px;
-    color: var(--muted-2);
-    margin-bottom: 10px;
-  }
-
-  .empty p { margin: 4px 0; font-size: 13px; }
+  .empty { padding: 56px 24px; text-align: center; color: var(--muted); }
+  .empty .glyph { font-size: 26px; color: var(--muted-2); margin-bottom: 12px; }
+  .empty p { margin: 4px 0; font-size: 13.5px; }
 
   .section-gap { margin-top: 28px; }
 
   .btn {
-    background: var(--text);
-    color: #0B0D10;
+    background: var(--blue);
+    color: #fff;
     border: none;
-    border-radius: 7px;
-    padding: 9px 16px;
-    font-size: 13px;
+    border-radius: 980px;
+    padding: 10px 20px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: opacity 0.12s ease;
+    transition: opacity 0.12s ease, transform 0.1s ease;
   }
 
-  .btn:hover { opacity: 0.85; }
+  .btn:hover { opacity: 0.88; }
+  .btn:active { transform: scale(0.98); }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .btn.secondary {
@@ -219,87 +237,78 @@
 
   .btn.secondary:hover { background: var(--panel-hover); opacity: 1; }
 
-  .form-panel {
-    padding: 18px;
-  }
-
-  .field {
-    margin-bottom: 14px;
-  }
-
-  .field label {
-    display: block;
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
+  .form-panel { padding: 22px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 7px; font-weight: 500; }
 
   .field input, .field select {
     width: 100%;
-    background: var(--bg);
+    background: var(--bg-elevated);
     border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: 10px 12px;
+    border-radius: 10px;
+    padding: 11px 13px;
     color: var(--text);
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
+    font-size: 13.5px;
   }
 
-  .field input:focus, .field select:focus {
-    border-color: var(--focus);
-  }
+  .field input:focus, .field select:focus { border-color: var(--blue); }
 
-  .field-row {
-    display: flex;
-    gap: 12px;
-  }
-
+  .field-row { display: flex; gap: 14px; }
   .field-row .field { flex: 1; }
 
-  .form-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 4px;
-  }
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; }
 
-  .status-line {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    padding: 10px 18px;
-    border-top: 1px solid var(--border);
-  }
-
+  .status-line { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; padding: 12px 22px; border-top: 1px solid var(--border); }
   .status-line.ok { color: var(--green); }
   .status-line.err { color: var(--red); }
 
-  .loading {
-    padding: 40px;
-    text-align: center;
-    color: var(--muted-2);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-  }
+  .loading { padding: 48px; text-align: center; color: var(--muted-2); font-size: 13.5px; }
 
   .fab-new {
     display: block;
     width: 100%;
-    margin-top: 14px;
-    padding: 12px;
+    margin-top: 16px;
+    padding: 14px;
     background: transparent;
     border: 1px dashed var(--border);
-    border-radius: 10px;
+    border-radius: 14px;
     color: var(--muted);
-    font-size: 13px;
+    font-size: 13.5px;
+    font-weight: 500;
     cursor: pointer;
   }
 
   .fab-new:hover { border-color: var(--muted-2); color: var(--text); }
 
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+  }
+
+  .pagination .page-info { font-size: 12.5px; color: var(--muted); }
+  .pagination .page-btns { display: flex; gap: 8px; }
+
+  .page-btn {
+    background: var(--panel-solid);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    cursor: pointer;
+  }
+
+  .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .page-btn:not(:disabled):hover { background: var(--panel-hover); }
+
   .hidden { display: none !important; }
 
   @media (prefers-reduced-motion: reduce) {
-    .row { transition: none; }
+    .row, body { transition: none; }
   }
 </style>
 </head>
@@ -308,7 +317,7 @@
 <div class="app">
 
   <div id="screen-login">
-    <div class="panel" style="max-width:360px;margin:80px auto 0;">
+    <div class="panel" style="max-width:380px;margin:100px auto 0;">
       <div class="panel-head"><h2>Sign in</h2></div>
       <div class="form-panel">
         <div class="field">
@@ -328,108 +337,134 @@
   </div>
 
   <div id="main-app" class="hidden">
-  <header class="top">
-    <div class="brand"><span class="dot">●</span>&nbsp; billing-engine</div>
-    <button class="btn secondary" id="btn-logout" style="padding:6px 12px;font-size:12px;">Sign out</button>
-  </header>
+    <header class="top">
+      <div class="brand">Billing Engine</div>
+      <div class="header-actions">
+        <button class="icon-btn" id="btn-theme-toggle" title="Toggle theme">◐</button>
+        <button class="icon-btn" id="btn-logout" title="Sign out">⏻</button>
+      </div>
+    </header>
 
-  <div id="breadcrumb" class="breadcrumb"></div>
+    <div id="breadcrumb" class="breadcrumb"></div>
 
-  <!-- SCREEN 1: CUSTOMER LIST -->
-  <div id="screen-customers">
-    <div class="panel">
-      <div class="panel-head"><h2>Customers</h2></div>
-      <div id="customer-list"></div>
-    </div>
-    <button class="fab-new" id="btn-new-charge">+ New charge (creates customer if new)</button>
-  </div>
-
-  <!-- SCREEN 2: CUSTOMER DETAIL -->
-  <div id="screen-detail" class="hidden">
-    <div class="panel">
-      <div class="panel-head"><h2 id="detail-title">Transactions</h2></div>
-      <div id="transaction-list"></div>
-    </div>
-
-    <div class="panel section-gap">
-      <div class="panel-head"><h2>Charge this customer</h2></div>
-      <div class="form-panel">
-        <div class="field-row">
-          <div class="field">
-            <label for="charge-amount">Amount (cents)</label>
-            <input type="number" id="charge-amount" value="1999" min="1" />
+    <!-- SCREEN 1: CUSTOMER LIST -->
+    <div id="screen-customers">
+      <div class="panel">
+        <div class="panel-head"><h2>Customers</h2></div>
+        <div id="customer-list"></div>
+        <div class="pagination">
+          <span class="page-info" id="customer-page-info"></span>
+          <div class="page-btns">
+            <button class="page-btn" id="customer-prev">‹ Prev</button>
+            <button class="page-btn" id="customer-next">Next ›</button>
           </div>
-          <div class="field">
-            <label for="charge-currency">Currency</label>
-            <input type="text" id="charge-currency" value="usd" />
-          </div>
-        </div>
-        <div class="field">
-          <label for="charge-token">Test token</label>
-          <select id="charge-token">
-            <option value="tok_visa">tok_visa — success</option>
-            <option value="tok_chargeDeclined">tok_chargeDeclined — generic decline</option>
-            <option value="tok_chargeDeclinedInsufficientFunds">tok_chargeDeclinedInsufficientFunds</option>
-            <option value="tok_chargeDeclinedExpiredCard">tok_chargeDeclinedExpiredCard</option>
-            <option value="tok_chargeDeclinedIncorrectCvc">tok_chargeDeclinedIncorrectCvc</option>
-          </select>
-        </div>
-        <div class="form-actions">
-          <button class="btn" id="btn-submit-charge">Charge customer</button>
         </div>
       </div>
-      <div id="charge-status"></div>
+      <button class="fab-new" id="btn-new-charge">+ New charge (creates customer if new)</button>
     </div>
-  </div>
 
-  <!-- NEW CHARGE MODAL (inline panel, not a real modal — keeps it simple) -->
-  <div id="screen-new-charge" class="hidden">
-    <div class="panel">
-      <div class="panel-head"><h2>New charge</h2></div>
-      <div class="form-panel">
-        <div class="field">
-          <label for="new-email">Customer email</label>
-          <input type="email" id="new-email" placeholder="customer@example.com" />
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label for="new-amount">Amount (cents)</label>
-            <input type="number" id="new-amount" value="1999" min="1" />
+    <!-- SCREEN 2: CUSTOMER DETAIL -->
+    <div id="screen-detail" class="hidden">
+      <div class="panel">
+        <div class="panel-head"><h2 id="detail-title">Transactions</h2></div>
+        <div id="transaction-list"></div>
+        <div class="pagination">
+          <span class="page-info" id="tx-page-info"></span>
+          <div class="page-btns">
+            <button class="page-btn" id="tx-prev">‹ Prev</button>
+            <button class="page-btn" id="tx-next">Next ›</button>
           </div>
-          <div class="field">
-            <label for="new-currency">Currency</label>
-            <input type="text" id="new-currency" value="usd" />
-          </div>
-        </div>
-        <div class="field">
-          <label for="new-token">Test token</label>
-          <select id="new-token">
-            <option value="tok_visa">tok_visa — success</option>
-            <option value="tok_chargeDeclined">tok_chargeDeclined — generic decline</option>
-            <option value="tok_chargeDeclinedInsufficientFunds">tok_chargeDeclinedInsufficientFunds</option>
-            <option value="tok_chargeDeclinedExpiredCard">tok_chargeDeclinedExpiredCard</option>
-            <option value="tok_chargeDeclinedIncorrectCvc">tok_chargeDeclinedIncorrectCvc</option>
-          </select>
-        </div>
-        <div class="form-actions">
-          <button class="btn secondary" id="btn-cancel-new">Cancel</button>
-          <button class="btn" id="btn-submit-new">Create &amp; charge</button>
         </div>
       </div>
-      <div id="new-charge-status"></div>
+
+      <div class="panel section-gap">
+        <div class="panel-head"><h2>Charge this customer</h2></div>
+        <div class="form-panel">
+          <div class="field-row">
+            <div class="field">
+              <label for="charge-amount">Amount (cents)</label>
+              <input type="number" id="charge-amount" value="1999" min="1" />
+            </div>
+            <div class="field">
+              <label for="charge-currency">Currency</label>
+              <input type="text" id="charge-currency" value="usd" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="charge-token">Test token</label>
+            <select id="charge-token">
+              <option value="tok_visa">tok_visa — success</option>
+              <option value="tok_chargeDeclined">tok_chargeDeclined — generic decline</option>
+              <option value="tok_chargeDeclinedInsufficientFunds">tok_chargeDeclinedInsufficientFunds</option>
+              <option value="tok_chargeDeclinedExpiredCard">tok_chargeDeclinedExpiredCard</option>
+              <option value="tok_chargeDeclinedIncorrectCvc">tok_chargeDeclinedIncorrectCvc</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button class="btn" id="btn-submit-charge">Charge customer</button>
+          </div>
+        </div>
+        <div id="charge-status"></div>
+      </div>
     </div>
-  </div>
+
+    <!-- NEW CHARGE PANEL -->
+    <div id="screen-new-charge" class="hidden">
+      <div class="panel">
+        <div class="panel-head"><h2>New charge</h2></div>
+        <div class="form-panel">
+          <div class="field">
+            <label for="new-email">Customer email</label>
+            <input type="email" id="new-email" placeholder="customer@example.com" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="new-amount">Amount (cents)</label>
+              <input type="number" id="new-amount" value="1999" min="1" />
+            </div>
+            <div class="field">
+              <label for="new-currency">Currency</label>
+              <input type="text" id="new-currency" value="usd" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="new-token">Test token</label>
+            <select id="new-token">
+              <option value="tok_visa">tok_visa — success</option>
+              <option value="tok_chargeDeclined">tok_chargeDeclined — generic decline</option>
+              <option value="tok_chargeDeclinedInsufficientFunds">tok_chargeDeclinedInsufficientFunds</option>
+              <option value="tok_chargeDeclinedExpiredCard">tok_chargeDeclinedExpiredCard</option>
+              <option value="tok_chargeDeclinedIncorrectCvc">tok_chargeDeclinedIncorrectCvc</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button class="btn secondary" id="btn-cancel-new">Cancel</button>
+            <button class="btn" id="btn-submit-new">Create &amp; charge</button>
+          </div>
+        </div>
+        <div id="new-charge-status"></div>
+      </div>
+    </div>
 
   </div><!-- /#main-app -->
 </div>
 
 <script>
   const API_BASE = 'http://localhost:8080/api';
+  const PAGE_SIZE = 10;
 
-  let currentCustomer = null; // { id, email }
+  let currentCustomer = null;
   let authToken = localStorage.getItem('authToken');
 
+  let allCustomers = [];
+  let customerPage = 1;
+
+  let allTransactions = [];
+  let txPage = 1;
+
   const el = (id) => document.getElementById(id);
+
+  // ---------- AUTH ----------
 
   function authHeaders(extra = {}) {
     return { ...extra, 'X-Auth-Token': authToken || '' };
@@ -500,6 +535,18 @@
     showLogin();
   }
 
+  // ---------- THEME ----------
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    el('btn-theme-toggle').textContent = next === 'dark' ? '◐' : '◑';
+  }
+
+  // ---------- HELPERS ----------
+
   function formatMoney(cents, currency) {
     return `${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`;
   }
@@ -507,6 +554,28 @@
   function formatDate(iso) {
     const d = new Date(iso);
     return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function paginate(array, page) {
+    const start = (page - 1) * PAGE_SIZE;
+    return array.slice(start, start + PAGE_SIZE);
+  }
+
+  function totalPages(array) {
+    return Math.max(1, Math.ceil(array.length / PAGE_SIZE));
+  }
+
+  function renderPagination(prefix, page, array) {
+    const pages = totalPages(array);
+    el(`${prefix}-page-info`).textContent = `Page ${page} of ${pages} · ${array.length} total`;
+    el(`${prefix}-prev`).disabled = page <= 1;
+    el(`${prefix}-next`).disabled = page >= pages;
   }
 
   function show(screenId) {
@@ -521,7 +590,7 @@
 
     const root = document.createElement('span');
     root.className = 'seg' + (!currentCustomer ? ' current' : '');
-    root.textContent = '> customers';
+    root.textContent = 'Customers';
     root.onclick = () => { currentCustomer = null; loadCustomers(); };
     bc.appendChild(root);
 
@@ -544,14 +613,15 @@
     show('screen-customers');
     renderBreadcrumb();
     const list = el('customer-list');
-    list.innerHTML = '<div class="loading">reading ledger…</div>';
+    list.innerHTML = '<div class="loading">Loading customers…</div>';
 
     try {
       const res = await fetch(`${API_BASE}/customers`, { headers: authHeaders() });
       if (res.status === 401) return handleUnauthorized();
       if (!res.ok) throw new Error(`Server responded ${res.status}`);
-      const customers = await res.json();
-      renderCustomerList(customers);
+      allCustomers = await res.json();
+      customerPage = 1;
+      renderCustomerPage();
     } catch (err) {
       list.innerHTML = `
         <div class="empty">
@@ -562,21 +632,22 @@
     }
   }
 
-  function renderCustomerList(customers) {
+  function renderCustomerPage() {
     const list = el('customer-list');
     list.innerHTML = '';
 
-    if (customers.length === 0) {
+    if (allCustomers.length === 0) {
       list.innerHTML = `
         <div class="empty">
           <div class="glyph">·</div>
           <p>No customers yet.</p>
           <p style="color:var(--muted-2)">Charge someone for the first time to add them here.</p>
         </div>`;
+      renderPagination('customer', 1, []);
       return;
     }
 
-    customers.forEach(c => {
+    paginate(allCustomers, customerPage).forEach(c => {
       const row = document.createElement('div');
       row.className = 'row';
       row.tabIndex = 0;
@@ -596,13 +667,12 @@
       `;
       list.appendChild(row);
     });
+
+    renderPagination('customer', customerPage, allCustomers);
   }
 
-  function escapeHtml(str) {
-    const d = document.createElement('div');
-    d.textContent = str;
-    return d.innerHTML;
-  }
+  el('customer-prev').onclick = () => { if (customerPage > 1) { customerPage--; renderCustomerPage(); } };
+  el('customer-next').onclick = () => { if (customerPage < totalPages(allCustomers)) { customerPage++; renderCustomerPage(); } };
 
   // ---------- SCREEN 2: CUSTOMER DETAIL ----------
 
@@ -613,48 +683,64 @@
     el('charge-status').innerHTML = '';
 
     const list = el('transaction-list');
-    list.innerHTML = '<div class="loading">loading transactions…</div>';
+    list.innerHTML = '<div class="loading">Loading transactions…</div>';
 
     try {
       const res = await fetch(`${API_BASE}/customers/${id}/transactions`, { headers: authHeaders() });
       if (res.status === 401) return handleUnauthorized();
       if (!res.ok) throw new Error(`Server responded ${res.status}`);
-      const txs = await res.json();
-      renderTransactionList(txs);
+      allTransactions = await res.json();
+      txPage = 1;
+      renderTransactionPage();
     } catch (err) {
       list.innerHTML = `<div class="empty"><div class="glyph">✕</div><p>${err.message}</p></div>`;
     }
   }
 
-  function renderTransactionList(txs) {
+  function renderTransactionPage() {
     const list = el('transaction-list');
     list.innerHTML = '';
 
-    if (txs.length === 0) {
+    if (allTransactions.length === 0) {
       list.innerHTML = `
         <div class="empty">
           <div class="glyph">·</div>
           <p>No transactions for this customer yet.</p>
         </div>`;
+      renderPagination('tx', 1, []);
       return;
     }
 
-    txs.forEach(t => {
+    paginate(allTransactions, txPage).forEach(t => {
       const row = document.createElement('div');
       row.className = 'row static';
+
+      let mailPill = '';
+      if (t.status === 'FAILED') {
+        mailPill = t.failureEmailSent
+          ? '<span class="pill mail-sent">Email sent</span>'
+          : '<span class="pill mail-pending">Email pending</span>';
+      }
+
       row.innerHTML = `
         <div class="row-main">
           <div class="row-email mono">${t.stripeChargeId || t.stripeCustomerId || 'no stripe id'}</div>
           <div class="row-sub">${formatDate(t.createdAt)}</div>
         </div>
         <div class="row-side">
+          ${mailPill}
           <span class="pill ${t.status.toLowerCase()}">${t.status}</span>
           <span class="amount">${formatMoney(t.amountInCents, t.currency)}</span>
         </div>
       `;
       list.appendChild(row);
     });
+
+    renderPagination('tx', txPage, allTransactions);
   }
+
+  el('tx-prev').onclick = () => { if (txPage > 1) { txPage--; renderTransactionPage(); } };
+  el('tx-next').onclick = () => { if (txPage < totalPages(allTransactions)) { txPage++; renderTransactionPage(); } };
 
   async function submitChargeToCurrentCustomer() {
     if (!currentCustomer) return;
@@ -666,7 +752,7 @@
     const btn = el('btn-submit-charge');
 
     btn.disabled = true;
-    statusBox.innerHTML = '<div class="status-line mono">sending to stripe…</div>';
+    statusBox.innerHTML = '<div class="status-line mono">Sending to Stripe…</div>';
 
     try {
       const res = await fetch(`${API_BASE}/customers/${currentCustomer.id}/charge`, {
@@ -712,7 +798,7 @@
     }
 
     btn.disabled = true;
-    statusBox.innerHTML = '<div class="status-line mono">sending to stripe…</div>';
+    statusBox.innerHTML = '<div class="status-line mono">Sending to Stripe…</div>';
 
     try {
       const res = await fetch(`${API_BASE}/charges`, {
@@ -739,6 +825,9 @@
   el('btn-submit-charge').onclick = submitChargeToCurrentCustomer;
   el('btn-login').onclick = submitLogin;
   el('btn-logout').onclick = logout;
+  el('btn-theme-toggle').onclick = toggleTheme;
+
+  el('btn-theme-toggle').textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '◐' : '◑';
 
   checkAuthAndInit();
 </script>
