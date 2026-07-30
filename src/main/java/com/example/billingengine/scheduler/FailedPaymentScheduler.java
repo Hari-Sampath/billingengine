@@ -21,11 +21,15 @@ public class FailedPaymentScheduler {
     public void checkFailedPayments() {
         List<Transaction> failedUnnotified =
                 transactionRepository.findByStatusAndFailureEmailSentFalse(TransactionStatus.FAILED);
-
         for (Transaction tx : failedUnnotified) {
-            emailService.sendFailureAlert(tx);
-            tx.setFailureEmailSent(true);
-            transactionRepository.save(tx);
+            try {
+                emailService.sendFailureAlert(tx);
+                tx.setFailureEmailSent(true);
+                transactionRepository.save(tx);
+            } catch (Exception e) {
+                System.out.println("Failed to send alert for transaction " + tx.getId() + ": " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 }

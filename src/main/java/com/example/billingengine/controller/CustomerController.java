@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +46,9 @@ public class CustomerController {
                 .map(c -> {
                     List<Transaction> txs = allTransactions.stream()
                             .filter(t -> c.getEmail().equalsIgnoreCase(t.getCustomerEmail()))
+                            .sorted(Comparator.comparing(Transaction::getCreatedAt).reversed())
                             .toList();
-                    boolean hasFailed = txs.stream().anyMatch(t -> t.getStatus() == TransactionStatus.FAILED);
+                    boolean hasFailed = !txs.isEmpty() && txs.get(0).getStatus() == TransactionStatus.FAILED;
                     return new StripeCustomerSummary(c.getId(), c.getEmail(), txs.size(), hasFailed);
                 })
                 .toList();
