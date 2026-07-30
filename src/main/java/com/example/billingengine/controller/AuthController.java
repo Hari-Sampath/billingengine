@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,8 +24,8 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // In-memory valid-token store — fine for a single-admin MVP; resets on restart
-    private static final Set<String> validTokens = ConcurrentHashMap.newKeySet();
+    private static final Map<String, Instant> tokenExpiry = new ConcurrentHashMap<>();
+    private static final long TOKEN_TTL_HOURS = 24;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -36,11 +36,23 @@ public class AuthController {
         }
 
         String token = UUID.randomUUID().toString();
-        validTokens.add(token);
+        tokenExpiry.put(token, Instant.now().plusSeconds(TOKEN_TTL_HOURS * 3600));
         return ResponseEntity.ok(Map.of("token", token));
     }
 
     public static boolean isValidToken(String token) {
-        return token != null && validTokens.contains(token);
+        if (token == null) return false;
+        Instant expiry = tokenExpiry.get(token);
+        if (expiry == null) return false;
+        if (Instant.now().isAfter(expiry)) {
+            tokenExpiry.remove(token); // expired — drop it immediately
+            return false;
+        }
+        return true;
+    }
+
+    public static void purgeExpiredTokens() {
+        Instant now = Instant.now();
+        tokenExpiry.entrySet().removeIf(entry -> now.isAfter(entry.getValue()));
     }
 }
