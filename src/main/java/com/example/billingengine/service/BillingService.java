@@ -91,4 +91,7 @@ public class BillingService {
             }
         });
     }
+    public Customer createCustomerOnly(String email) {
+        return getOrCreateCustomer(email);
+    }
 }

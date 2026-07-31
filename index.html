@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script>
-  // Apply saved theme before first paint, to avoid a flash of the wrong theme
   (function () {
     const saved = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', saved);
@@ -15,43 +14,49 @@
 </script>
 <style>
   :root[data-theme="dark"] {
-    --bg: #000000;
-    --bg-elevated: #0a0a0b;
-    --panel: rgba(28, 28, 30, 0.72);
-    --panel-solid: #1c1c1e;
-    --panel-hover: #242426;
-    --border: rgba(255,255,255,0.09);
-    --text: #f5f5f7;
-    --muted: #98989d;
-    --muted-2: #636366;
-    --blue: #2997ff;
-    --green: #30d158;
-    --green-dim: rgba(48,209,88,0.14);
-    --red: #ff453a;
-    --red-dim: rgba(255,69,58,0.14);
-    --amber: #ff9f0a;
-    --amber-dim: rgba(255,159,10,0.14);
-    --shadow: 0 20px 60px rgba(0,0,0,0.45);
+    --bg: #08090a;
+    --sidebar: #0d0e10;
+    --panel: #141518;
+    --panel-hover: #1a1b1f;
+    --field-bg: #0d0e10;
+    --border: #232428;
+    --text: #f0f1f3;
+    --muted: #8a8d94;
+    --muted-2: #55585f;
+    --blue: #4d8dff;
+    --blue-dim: rgba(77,141,255,0.13);
+    --green: #35d488;
+    --green-dim: rgba(53,212,136,0.13);
+    --red: #ff5c5c;
+    --red-dim: rgba(255,92,92,0.13);
+    --amber: #ffb545;
+    --amber-dim: rgba(255,181,69,0.13);
+    --cta-bg: #f0f1f3;
+    --cta-text: #08090a;
+    --shadow: 0 12px 40px rgba(0,0,0,0.4);
   }
 
   :root[data-theme="light"] {
-    --bg: #f5f5f7;
-    --bg-elevated: #fbfbfd;
-    --panel: rgba(255,255,255,0.78);
-    --panel-solid: #ffffff;
-    --panel-hover: #f0f0f2;
-    --border: rgba(0,0,0,0.08);
-    --text: #1d1d1f;
-    --muted: #6e6e73;
-    --muted-2: #a1a1a6;
-    --blue: #0071e3;
-    --green: #248a3d;
-    --green-dim: rgba(36,138,61,0.10);
-    --red: #d70015;
-    --red-dim: rgba(215,0,21,0.10);
-    --amber: #b25000;
-    --amber-dim: rgba(178,80,0,0.10);
-    --shadow: 0 20px 50px rgba(0,0,0,0.08);
+    --bg: #fafafa;
+    --sidebar: #f2f2f3;
+    --panel: #ffffff;
+    --panel-hover: #f5f5f6;
+    --field-bg: #f5f5f6;
+    --border: #e4e4e6;
+    --text: #16171a;
+    --muted: #6c6f76;
+    --muted-2: #a4a7ad;
+    --blue: #2f6fed;
+    --blue-dim: rgba(47,111,237,0.08);
+    --green: #1a9c63;
+    --green-dim: rgba(26,156,99,0.08);
+    --red: #d92d2d;
+    --red-dim: rgba(217,45,45,0.08);
+    --amber: #b26a00;
+    --amber-dim: rgba(178,106,0,0.08);
+    --cta-bg: #16171a;
+    --cta-text: #fafafa;
+    --shadow: 0 12px 32px rgba(0,0,0,0.08);
   }
 
   * { box-sizing: border-box; }
@@ -60,72 +65,108 @@
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-    min-height: 100vh;
+    font-family: 'Inter', -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
-    transition: background 0.25s ease, color 0.25s ease;
   }
 
-  .mono { font-family: 'IBM Plex Mono', 'SF Mono', monospace; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
   ::selection { background: var(--blue); color: #fff; }
+  *:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
 
-  *:focus-visible {
-    outline: 2px solid var(--blue);
-    outline-offset: 2px;
-    border-radius: 4px;
-  }
+  /* ---------- LOGIN ---------- */
 
-  .app {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 48px 24px 100px;
-  }
-
-  header.top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-  }
-
-  .brand {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-  }
-
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .icon-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--panel-solid);
-    color: var(--text);
+  #screen-login {
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    font-size: 15px;
-    transition: background 0.15s ease, transform 0.1s ease;
   }
 
-  .icon-btn:hover { background: var(--panel-hover); }
-  .icon-btn:active { transform: scale(0.94); }
+  .login-card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  /* ---------- APP SHELL ---------- */
+
+  #main-app {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 22px 14px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+
+  .sidebar-brand {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    padding: 6px 10px 22px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    margin-bottom: 2px;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item .glyph { font-size: 14px; width: 16px; text-align: center; }
+  .nav-item:hover { background: var(--panel-hover); color: var(--text); }
+  .nav-item.active { background: var(--blue-dim); color: var(--blue); border-left-color: var(--blue); }
+
+  .sidebar-footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .main {
+    flex: 1;
+    min-width: 0;
+    padding: 40px 48px 100px;
+    max-width: 1180px;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .page-title { font-size: 24px; font-weight: 700; letter-spacing: -0.015em; margin: 0 0 4px; }
+  .page-sub { font-size: 13.5px; color: var(--muted); margin: 0; }
 
   .breadcrumb {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--muted);
-    margin: 20px 0 24px;
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
   }
 
   .breadcrumb .seg { cursor: pointer; }
@@ -133,41 +174,65 @@
   .breadcrumb .seg.current { color: var(--text); font-weight: 600; cursor: default; }
   .breadcrumb .sep { color: var(--muted-2); }
 
+  /* ---------- STAT CARDS ---------- */
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+
+  .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .stat-value { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; font-family: 'IBM Plex Mono', monospace; }
+  .stat-value.green { color: var(--green); }
+  .stat-value.red { color: var(--red); }
+
+  /* ---------- PANELS / TABLES ---------- */
+
   .panel {
     background: var(--panel);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border);
-    border-radius: 18px;
+    border-radius: 14px;
     overflow: hidden;
-    box-shadow: var(--shadow);
   }
 
   .panel-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 18px 22px;
+    padding: 16px 20px;
     border-bottom: 1px solid var(--border);
   }
 
-  .panel-head h2 {
-    font-size: 13px;
+  .panel-head h2 { font-size: 13px; font-weight: 600; color: var(--text); margin: 0; }
+
+  .table-header-row {
+    display: grid;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--muted);
-    margin: 0;
+    letter-spacing: 0.05em;
+    color: var(--muted-2);
   }
 
   .row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 18px 22px;
+    padding: 15px 20px;
     border-bottom: 1px solid var(--border);
     cursor: pointer;
-    transition: background 0.12s ease;
+    transition: background 0.1s ease;
   }
 
   .row:last-child { border-bottom: none; }
@@ -175,182 +240,237 @@
   .row.static { cursor: default; }
   .row.static:hover { background: none; }
 
-  .row-main { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
-
-  .row-email {
-    font-size: 15px;
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .row-sub { font-size: 12.5px; color: var(--muted); }
-
+  .row-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .row-email { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row-sub { font-size: 12px; color: var(--muted); }
   .row-side { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
-  .pill {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    padding: 4px 10px;
-    border-radius: 999px;
-    text-transform: uppercase;
-  }
-
+  .pill { font-size: 10.5px; font-weight: 700; letter-spacing: 0.03em; padding: 4px 9px; border-radius: 6px; text-transform: uppercase; }
   .pill.succeeded { background: var(--green-dim); color: var(--green); }
   .pill.failed { background: var(--red-dim); color: var(--red); }
   .pill.mail-sent { background: var(--green-dim); color: var(--green); }
   .pill.mail-pending { background: var(--amber-dim); color: var(--amber); }
 
-  .chevron { color: var(--muted-2); font-size: 16px; }
+  .chevron { color: var(--muted-2); font-size: 15px; }
+  .amount { font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; font-weight: 500; text-align: right; min-width: 90px; }
 
-  .amount { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; text-align: right; }
+  .empty { padding: 52px 24px; text-align: center; color: var(--muted); }
+  .empty .glyph { font-size: 24px; color: var(--muted-2); margin-bottom: 10px; }
+  .empty p { margin: 4px 0; font-size: 13px; }
 
-  .empty { padding: 56px 24px; text-align: center; color: var(--muted); }
-  .empty .glyph { font-size: 26px; color: var(--muted-2); margin-bottom: 12px; }
-  .empty p { margin: 4px 0; font-size: 13.5px; }
+  .section-gap { margin-top: 24px; }
 
-  .section-gap { margin-top: 28px; }
+  /* ---------- BUTTONS: deliberate contrast ---------- */
 
-  .btn {
-    background: var(--blue);
-    color: #fff;
-    border: none;
-    border-radius: 980px;
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.12s ease, transform 0.1s ease;
-  }
-
-  .btn:hover { opacity: 0.88; }
-  .btn:active { transform: scale(0.98); }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .btn.secondary {
+  .btn-outline {
     background: transparent;
     color: var(--text);
     border: 1px solid var(--border);
-  }
-
-  .btn.secondary:hover { background: var(--panel-hover); opacity: 1; }
-
-  .form-panel { padding: 22px; }
-  .field { margin-bottom: 16px; }
-  .field label { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 7px; font-weight: 500; }
-
-  .field input, .field select {
-    width: 100%;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 11px 13px;
-    color: var(--text);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13.5px;
-  }
-
-  .field input:focus, .field select:focus { border-color: var(--blue); }
-
-  .field-row { display: flex; gap: 14px; }
-  .field-row .field { flex: 1; }
-
-  .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; }
-
-  .status-line { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; padding: 12px 22px; border-top: 1px solid var(--border); }
-  .status-line.ok { color: var(--green); }
-  .status-line.err { color: var(--red); }
-
-  .loading { padding: 48px; text-align: center; color: var(--muted-2); font-size: 13.5px; }
-
-  .fab-new {
-    display: block;
-    width: 100%;
-    margin-top: 16px;
-    padding: 14px;
-    background: transparent;
-    border: 1px dashed var(--border);
-    border-radius: 14px;
-    color: var(--muted);
-    font-size: 13.5px;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
     font-weight: 500;
     cursor: pointer;
   }
+  .btn-outline:hover { background: var(--panel-hover); }
 
-  .fab-new:hover { border-color: var(--muted-2); color: var(--text); }
+  .btn-cta {
+    background: var(--cta-bg);
+    color: var(--cta-text);
+    border: none;
+    border-radius: 10px;
+    padding: 14px 22px;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 0.08s ease, opacity 0.12s ease;
+  }
+  .btn-cta:hover { opacity: 0.9; }
+  .btn-cta:active { transform: scale(0.98); }
+  .btn-cta:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  .pagination {
+  .btn-primary {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .icon-btn {
+    width: 32px; height: 32px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--panel);
+    color: var(--text); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 14px;
+  }
+  .icon-btn:hover { background: var(--panel-hover); }
+
+  /* ---------- CHARGE CTA CARD ---------- */
+
+  .cta-card {
+    background: var(--panel);
+    border: 1.5px solid var(--text);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 22px;
-    border-top: 1px solid var(--border);
+    gap: 24px;
+    flex-wrap: wrap;
   }
 
-  .pagination .page-info { font-size: 12.5px; color: var(--muted); }
-  .pagination .page-btns { display: flex; gap: 8px; }
+  .cta-card-info h3 { margin: 0 0 4px; font-size: 15px; font-weight: 700; }
+  .cta-card-info p { margin: 0; font-size: 12.5px; color: var(--muted); }
 
-  .page-btn {
-    background: var(--panel-solid);
+  .cta-fields { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  .cta-fields input, .cta-fields select {
+    background: var(--field-bg);
     border: 1px solid var(--border);
-    color: var(--text);
     border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 12.5px;
-    cursor: pointer;
+    padding: 9px 11px;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
   }
 
+  /* ---------- FORMS ---------- */
+
+  .form-panel { padding: 20px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+  .field input, .field select {
+    width: 100%;
+    background: var(--field-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+  }
+  .field input:focus, .field select:focus { border-color: var(--blue); }
+  .field-row { display: flex; gap: 12px; }
+  .field-row .field { flex: 1; }
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
+
+  .status-line { font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 10px 20px; border-top: 1px solid var(--border); }
+  .status-line.ok { color: var(--green); }
+  .status-line.err { color: var(--red); }
+
+  .loading { padding: 44px; text-align: center; color: var(--muted-2); font-size: 13px; }
+
+  .pagination { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-top: 1px solid var(--border); }
+  .pagination .page-info { font-size: 12px; color: var(--muted); }
+  .pagination .page-btns { display: flex; gap: 8px; }
+  .page-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text); border-radius: 7px; padding: 5px 11px; font-size: 12px; cursor: pointer; }
   .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
   .page-btn:not(:disabled):hover { background: var(--panel-hover); }
 
   .hidden { display: none !important; }
 
-  @media (prefers-reduced-motion: reduce) {
-    .row, body { transition: none; }
+  @media (max-width: 900px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .sidebar { width: 72px; }
+    .sidebar-brand, .nav-item span.label { display: none; }
+    .main { padding: 32px 20px 80px; }
   }
 </style>
 </head>
 <body>
 
-<div class="app">
-
-  <div id="screen-login">
-    <div class="panel" style="max-width:380px;margin:100px auto 0;">
-      <div class="panel-head"><h2>Sign in</h2></div>
-      <div class="form-panel">
-        <div class="field">
-          <label for="login-email">Admin email</label>
-          <input type="email" id="login-email" autocomplete="username" />
-        </div>
-        <div class="field">
-          <label for="login-password">Password</label>
-          <input type="password" id="login-password" autocomplete="current-password" />
-        </div>
-        <div class="form-actions" style="justify-content:stretch;">
-          <button class="btn" id="btn-login" style="width:100%;">Sign in</button>
-        </div>
+<div id="screen-login">
+  <div class="login-card">
+    <div class="panel-head"><h2>Sign in</h2></div>
+    <div class="form-panel">
+      <div class="field">
+        <label for="login-email">Admin email</label>
+        <input type="email" id="login-email" autocomplete="username" />
       </div>
-      <div id="login-status"></div>
+      <div class="field">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" autocomplete="current-password" />
+      </div>
+      <div class="form-actions" style="justify-content:stretch;">
+        <button class="btn-primary" id="btn-login" style="width:100%;padding:11px;">Sign in</button>
+      </div>
     </div>
+    <div id="login-status"></div>
   </div>
+</div>
 
-  <div id="main-app" class="hidden">
-    <header class="top">
-      <div class="brand">Billing Engine</div>
-      <div class="header-actions">
-        <button class="icon-btn" id="btn-theme-toggle" title="Toggle theme">◐</button>
-        <button class="icon-btn" id="btn-logout" title="Sign out">⏻</button>
+<div id="main-app" class="hidden">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">Billing Engine</div>
+
+    <div class="nav-item active" id="nav-dashboard" data-view="dashboard">
+      <span class="glyph">◱</span><span class="label">Dashboard</span>
+    </div>
+    <div class="nav-item" id="nav-customers" data-view="customers">
+      <span class="glyph">☰</span><span class="label">Customers</span>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="nav-item" id="btn-theme-toggle"><span class="glyph">◐</span><span class="label">Toggle theme</span></div>
+      <div class="nav-item" id="btn-logout"><span class="glyph">⏻</span><span class="label">Sign out</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div id="screen-dashboard">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-sub">Live overview of your billing activity</p>
+        </div>
       </div>
-    </header>
 
-    <div id="breadcrumb" class="breadcrumb"></div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value" id="stat-revenue">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Success Rate</div>
+          <div class="stat-value green" id="stat-success-rate">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Failed Payments</div>
+          <div class="stat-value red" id="stat-failed">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Customers</div>
+          <div class="stat-value" id="stat-customers">—</div>
+        </div>
+      </div>
 
-    <!-- SCREEN 1: CUSTOMER LIST -->
-    <div id="screen-customers">
       <div class="panel">
-        <div class="panel-head"><h2>Customers</h2></div>
+        <div class="panel-head"><h2>Recent Activity</h2></div>
+        <div id="recent-activity-list"></div>
+      </div>
+    </div>
+
+    <!-- CUSTOMERS LIST -->
+    <div id="screen-customers" class="hidden">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Customers</h1>
+          <p class="page-sub">Everyone who has been charged, pulled live from Stripe</p>
+        </div>
+        <button class="btn-outline" id="btn-new-charge">+ New customer</button>
+      </div>
+
+      <div class="panel">
         <div id="customer-list"></div>
         <div class="pagination">
           <span class="page-info" id="customer-page-info"></span>
@@ -360,13 +480,40 @@
           </div>
         </div>
       </div>
-      <button class="fab-new" id="btn-new-charge">+ New charge (creates customer if new)</button>
     </div>
 
-    <!-- SCREEN 2: CUSTOMER DETAIL -->
+    <!-- CUSTOMER DETAIL -->
     <div id="screen-detail" class="hidden">
-      <div class="panel">
-        <div class="panel-head"><h2 id="detail-title">Transactions</h2></div>
+      <div class="breadcrumb" id="breadcrumb"></div>
+      <div class="page-header">
+        <div>
+          <h1 class="page-title" id="detail-email">—</h1>
+          <p class="page-sub" id="detail-sub">—</p>
+        </div>
+      </div>
+
+      <div class="cta-card">
+        <div class="cta-card-info">
+          <h3>Charge this customer</h3>
+          <p>Runs immediately against the Stripe test environment</p>
+        </div>
+        <div class="cta-fields">
+          <input type="number" id="charge-amount" value="1999" min="1" style="width:110px;" title="Amount (cents)" />
+          <input type="text" id="charge-currency" value="usd" style="width:64px;" title="Currency" />
+          <select id="charge-token">
+            <option value="tok_visa">tok_visa — success</option>
+            <option value="tok_chargeDeclined">tok_chargeDeclined</option>
+            <option value="tok_chargeDeclinedInsufficientFunds">insufficient funds</option>
+            <option value="tok_chargeDeclinedExpiredCard">expired card</option>
+            <option value="tok_chargeDeclinedIncorrectCvc">incorrect CVC</option>
+          </select>
+          <button class="btn-cta" id="btn-submit-charge">Charge Customer</button>
+        </div>
+      </div>
+      <div id="charge-status"></div>
+
+      <div class="panel section-gap">
+        <div class="panel-head"><h2>Transaction History</h2></div>
         <div id="transaction-list"></div>
         <div class="pagination">
           <span class="page-info" id="tx-page-info"></span>
@@ -376,42 +523,19 @@
           </div>
         </div>
       </div>
-
-      <div class="panel section-gap">
-        <div class="panel-head"><h2>Charge this customer</h2></div>
-        <div class="form-panel">
-          <div class="field-row">
-            <div class="field">
-              <label for="charge-amount">Amount (cents)</label>
-              <input type="number" id="charge-amount" value="1999" min="1" />
-            </div>
-            <div class="field">
-              <label for="charge-currency">Currency</label>
-              <input type="text" id="charge-currency" value="usd" />
-            </div>
-          </div>
-          <div class="field">
-            <label for="charge-token">Test token</label>
-            <select id="charge-token">
-              <option value="tok_visa">tok_visa — success</option>
-              <option value="tok_chargeDeclined">tok_chargeDeclined — generic decline</option>
-              <option value="tok_chargeDeclinedInsufficientFunds">tok_chargeDeclinedInsufficientFunds</option>
-              <option value="tok_chargeDeclinedExpiredCard">tok_chargeDeclinedExpiredCard</option>
-              <option value="tok_chargeDeclinedIncorrectCvc">tok_chargeDeclinedIncorrectCvc</option>
-            </select>
-          </div>
-          <div class="form-actions">
-            <button class="btn" id="btn-submit-charge">Charge customer</button>
-          </div>
-        </div>
-        <div id="charge-status"></div>
-      </div>
     </div>
 
-    <!-- NEW CHARGE PANEL -->
+    <!-- NEW CUSTOMER -->
     <div id="screen-new-charge" class="hidden">
-      <div class="panel">
-        <div class="panel-head"><h2>New charge</h2></div>
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">New customer</h1>
+          <p class="page-sub">Creates the customer in Stripe and runs a first charge</p>
+        </div>
+        <button class="btn-outline" id="btn-cancel-new">Cancel</button>
+      </div>
+
+      <div class="panel" style="max-width:480px;">
         <div class="form-panel">
           <div class="field">
             <label for="new-email">Customer email</label>
@@ -431,22 +555,21 @@
             <label for="new-token">Test token</label>
             <select id="new-token">
               <option value="tok_visa">tok_visa — success</option>
-              <option value="tok_chargeDeclined">tok_chargeDeclined — generic decline</option>
-              <option value="tok_chargeDeclinedInsufficientFunds">tok_chargeDeclinedInsufficientFunds</option>
-              <option value="tok_chargeDeclinedExpiredCard">tok_chargeDeclinedExpiredCard</option>
-              <option value="tok_chargeDeclinedIncorrectCvc">tok_chargeDeclinedIncorrectCvc</option>
+              <option value="tok_chargeDeclined">tok_chargeDeclined</option>
+              <option value="tok_chargeDeclinedInsufficientFunds">insufficient funds</option>
+              <option value="tok_chargeDeclinedExpiredCard">expired card</option>
+              <option value="tok_chargeDeclinedIncorrectCvc">incorrect CVC</option>
             </select>
           </div>
           <div class="form-actions">
-            <button class="btn secondary" id="btn-cancel-new">Cancel</button>
-            <button class="btn" id="btn-submit-new">Create &amp; charge</button>
+            <button class="btn-primary" id="btn-submit-new">Create &amp; charge</button>
           </div>
         </div>
         <div id="new-charge-status"></div>
       </div>
     </div>
 
-  </div><!-- /#main-app -->
+  </main>
 </div>
 
 <script>
@@ -455,44 +578,19 @@
 
   let currentCustomer = null;
   let authToken = localStorage.getItem('authToken');
-
-  let allCustomers = [];
-  let customerPage = 1;
-
-  let allTransactions = [];
-  let txPage = 1;
+  let allCustomers = [], customerPage = 1;
+  let allTransactions = [], txPage = 1;
 
   const el = (id) => document.getElementById(id);
 
-  // ---------- AUTH ----------
-
-  function authHeaders(extra = {}) {
-    return { ...extra, 'X-Auth-Token': authToken || '' };
-  }
-
-  function handleUnauthorized() {
-    localStorage.removeItem('authToken');
-    authToken = null;
-    showLogin();
-  }
-
-  function showLogin() {
-    el('screen-login').classList.remove('hidden');
-    el('main-app').classList.add('hidden');
-  }
-
-  function showMainApp() {
-    el('screen-login').classList.add('hidden');
-    el('main-app').classList.remove('hidden');
-  }
+  function authHeaders(extra = {}) { return { ...extra, 'X-Auth-Token': authToken || '' }; }
+  function handleUnauthorized() { localStorage.removeItem('authToken'); authToken = null; showLogin(); }
+  function showLogin() { el('screen-login').classList.remove('hidden'); el('main-app').classList.add('hidden'); }
+  function showMainApp() { el('screen-login').classList.add('hidden'); el('main-app').classList.remove('hidden'); }
 
   function checkAuthAndInit() {
-    if (authToken) {
-      showMainApp();
-      loadCustomers();
-    } else {
-      showLogin();
-    }
+    if (authToken) { showMainApp(); navigateTo('dashboard'); }
+    else { showLogin(); }
   }
 
   async function submitLogin() {
@@ -500,19 +598,12 @@
     const password = el('login-password').value;
     const statusBox = el('login-status');
     const btn = el('btn-login');
-
-    if (!email || !password) {
-      statusBox.innerHTML = '<div class="status-line err">✕ enter email and password</div>';
-      return;
-    }
-
+    if (!email || !password) { statusBox.innerHTML = '<div class="status-line err">✕ enter email and password</div>'; return; }
     btn.disabled = true;
     statusBox.innerHTML = '<div class="status-line mono">checking…</div>';
-
     try {
       const res = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
       if (!res.ok) throw new Error('Invalid email or password');
@@ -520,57 +611,28 @@
       authToken = data.token;
       localStorage.setItem('authToken', authToken);
       showMainApp();
-      loadCustomers();
+      navigateTo('dashboard');
     } catch (err) {
       statusBox.innerHTML = `<div class="status-line err">✕ ${err.message}</div>`;
-    } finally {
-      btn.disabled = false;
-    }
+    } finally { btn.disabled = false; }
   }
 
   function logout() {
-    localStorage.removeItem('authToken');
-    authToken = null;
-    currentCustomer = null;
-    showLogin();
+    localStorage.removeItem('authToken'); authToken = null; currentCustomer = null; showLogin();
   }
-
-  // ---------- THEME ----------
 
   function toggleTheme() {
     const current = document.documentElement.getAttribute('data-theme');
     const next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
-    el('btn-theme-toggle').textContent = next === 'dark' ? '◐' : '◑';
   }
 
-  // ---------- HELPERS ----------
-
-  function formatMoney(cents, currency) {
-    return `${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`;
-  }
-
-  function formatDate(iso) {
-    const d = new Date(iso);
-    return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-  }
-
-  function escapeHtml(str) {
-    const d = document.createElement('div');
-    d.textContent = str;
-    return d.innerHTML;
-  }
-
-  function paginate(array, page) {
-    const start = (page - 1) * PAGE_SIZE;
-    return array.slice(start, start + PAGE_SIZE);
-  }
-
-  function totalPages(array) {
-    return Math.max(1, Math.ceil(array.length / PAGE_SIZE));
-  }
-
+  function formatMoney(cents, currency) { return `${(cents / 100).toFixed(2)} ${currency.toUpperCase()}`; }
+  function formatDate(iso) { return new Date(iso).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+  function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+  function paginate(array, page) { const start = (page - 1) * PAGE_SIZE; return array.slice(start, start + PAGE_SIZE); }
+  function totalPages(array) { return Math.max(1, Math.ceil(array.length / PAGE_SIZE)); }
   function renderPagination(prefix, page, array) {
     const pages = totalPages(array);
     el(`${prefix}-page-info`).textContent = `Page ${page} of ${pages} · ${array.length} total`;
@@ -578,43 +640,72 @@
     el(`${prefix}-next`).disabled = page >= pages;
   }
 
-  function show(screenId) {
-    ['screen-customers', 'screen-detail', 'screen-new-charge'].forEach(id => {
-      el(id).classList.toggle('hidden', id !== screenId);
+  // ---------- NAVIGATION ----------
+
+  function navigateTo(view) {
+    ['screen-dashboard', 'screen-customers', 'screen-detail', 'screen-new-charge'].forEach(id => {
+      el(id).classList.toggle('hidden', id !== `screen-${view}`);
     });
+    ['nav-dashboard', 'nav-customers'].forEach(id => el(id).classList.remove('active'));
+    if (view === 'dashboard') { el('nav-dashboard').classList.add('active'); loadDashboard(); }
+    if (view === 'customers' || view === 'detail' || view === 'new-charge') { el('nav-customers').classList.add('active'); }
+    if (view === 'customers') loadCustomers();
   }
 
-  function renderBreadcrumb() {
-    const bc = el('breadcrumb');
-    bc.innerHTML = '';
+  el('nav-dashboard').onclick = () => navigateTo('dashboard');
+  el('nav-customers').onclick = () => navigateTo('customers');
 
-    const root = document.createElement('span');
-    root.className = 'seg' + (!currentCustomer ? ' current' : '');
-    root.textContent = 'Customers';
-    root.onclick = () => { currentCustomer = null; loadCustomers(); };
-    bc.appendChild(root);
+  // ---------- DASHBOARD ----------
 
-    if (currentCustomer) {
-      const sep = document.createElement('span');
-      sep.className = 'sep';
-      sep.textContent = '/';
-      bc.appendChild(sep);
+  async function loadDashboard() {
+    try {
+      const [summaryRes, recentRes] = await Promise.all([
+        fetch(`${API_BASE}/dashboard/summary`, { headers: authHeaders() }),
+        fetch(`${API_BASE}/dashboard/recent`, { headers: authHeaders() })
+      ]);
+      if (summaryRes.status === 401 || recentRes.status === 401) return handleUnauthorized();
 
-      const leaf = document.createElement('span');
-      leaf.className = 'seg current mono';
-      leaf.textContent = currentCustomer.email;
-      bc.appendChild(leaf);
+      const summary = await summaryRes.json();
+      el('stat-revenue').textContent = formatMoney(summary.totalRevenueCents, 'usd');
+      el('stat-success-rate').textContent = `${summary.successRate.toFixed(0)}%`;
+      el('stat-failed').textContent = summary.failedCount;
+      el('stat-customers').textContent = summary.customerCount;
+
+      const recent = await recentRes.json();
+      renderRecentActivity(recent);
+    } catch (err) {
+      el('recent-activity-list').innerHTML = `<div class="empty"><div class="glyph">✕</div><p>${err.message}</p></div>`;
     }
   }
 
-  // ---------- SCREEN 1: CUSTOMERS ----------
+  function renderRecentActivity(txs) {
+    const list = el('recent-activity-list');
+    list.innerHTML = '';
+    if (txs.length === 0) {
+      list.innerHTML = '<div class="empty"><div class="glyph">·</div><p>No activity yet.</p></div>';
+      return;
+    }
+    txs.forEach(t => {
+      const row = document.createElement('div');
+      row.className = 'row static';
+      row.innerHTML = `
+        <div class="row-main">
+          <div class="row-email">${escapeHtml(t.customerEmail)}</div>
+          <div class="row-sub">${formatDate(t.createdAt)}</div>
+        </div>
+        <div class="row-side">
+          <span class="pill ${t.status.toLowerCase()}">${t.status}</span>
+          <span class="amount">${formatMoney(t.amountInCents, t.currency)}</span>
+        </div>`;
+      list.appendChild(row);
+    });
+  }
+
+  // ---------- CUSTOMERS ----------
 
   async function loadCustomers() {
-    show('screen-customers');
-    renderBreadcrumb();
     const list = el('customer-list');
     list.innerHTML = '<div class="loading">Loading customers…</div>';
-
     try {
       const res = await fetch(`${API_BASE}/customers`, { headers: authHeaders() });
       if (res.status === 401) return handleUnauthorized();
@@ -623,68 +714,53 @@
       customerPage = 1;
       renderCustomerPage();
     } catch (err) {
-      list.innerHTML = `
-        <div class="empty">
-          <div class="glyph">✕</div>
-          <p>Could not reach the billing engine.</p>
-          <p style="color:var(--muted-2)">${err.message} — is the Spring Boot app running on :8080?</p>
-        </div>`;
+      list.innerHTML = `<div class="empty"><div class="glyph">✕</div><p>Could not reach the billing engine.</p><p style="color:var(--muted-2)">${err.message}</p></div>`;
     }
   }
 
   function renderCustomerPage() {
     const list = el('customer-list');
     list.innerHTML = '';
-
     if (allCustomers.length === 0) {
-      list.innerHTML = `
-        <div class="empty">
-          <div class="glyph">·</div>
-          <p>No customers yet.</p>
-          <p style="color:var(--muted-2)">Charge someone for the first time to add them here.</p>
-        </div>`;
+      list.innerHTML = '<div class="empty"><div class="glyph">·</div><p>No customers yet.</p></div>';
       renderPagination('customer', 1, []);
       return;
     }
-
     paginate(allCustomers, customerPage).forEach(c => {
       const row = document.createElement('div');
       row.className = 'row';
       row.tabIndex = 0;
-      row.setAttribute('role', 'button');
       row.onclick = () => openCustomer(c.id, c.email);
       row.onkeypress = (e) => { if (e.key === 'Enter') openCustomer(c.id, c.email); };
-
       row.innerHTML = `
         <div class="row-main">
           <div class="row-email">${escapeHtml(c.email)}</div>
           <div class="row-sub">${c.transactionCount} transaction${c.transactionCount === 1 ? '' : 's'}</div>
         </div>
         <div class="row-side">
-          ${c.hasFailedTransaction ? '<span class="pill failed">Failed</span>' : ''}
+          ${c.hasFailedTransaction ? '<span class="pill failed">Failed</span>' : '<span class="pill succeeded">OK</span>'}
           <span class="chevron">›</span>
-        </div>
-      `;
+        </div>`;
       list.appendChild(row);
     });
-
     renderPagination('customer', customerPage, allCustomers);
   }
 
   el('customer-prev').onclick = () => { if (customerPage > 1) { customerPage--; renderCustomerPage(); } };
   el('customer-next').onclick = () => { if (customerPage < totalPages(allCustomers)) { customerPage++; renderCustomerPage(); } };
 
-  // ---------- SCREEN 2: CUSTOMER DETAIL ----------
+  // ---------- CUSTOMER DETAIL ----------
 
   async function openCustomer(id, email) {
     currentCustomer = { id, email };
-    show('screen-detail');
-    renderBreadcrumb();
+    navigateTo('detail');
+    el('detail-email').textContent = email;
+    el('detail-sub').textContent = 'Customer detail';
+    el('breadcrumb').innerHTML = `<span class="seg" onclick="navigateTo('customers')">Customers</span><span class="sep">/</span><span class="seg current mono">${escapeHtml(email)}</span>`;
     el('charge-status').innerHTML = '';
 
     const list = el('transaction-list');
     list.innerHTML = '<div class="loading">Loading transactions…</div>';
-
     try {
       const res = await fetch(`${API_BASE}/customers/${id}/transactions`, { headers: authHeaders() });
       if (res.status === 401) return handleUnauthorized();
@@ -700,28 +776,18 @@
   function renderTransactionPage() {
     const list = el('transaction-list');
     list.innerHTML = '';
-
     if (allTransactions.length === 0) {
-      list.innerHTML = `
-        <div class="empty">
-          <div class="glyph">·</div>
-          <p>No transactions for this customer yet.</p>
-        </div>`;
+      list.innerHTML = '<div class="empty"><div class="glyph">·</div><p>No transactions for this customer yet.</p></div>';
       renderPagination('tx', 1, []);
       return;
     }
-
     paginate(allTransactions, txPage).forEach(t => {
       const row = document.createElement('div');
       row.className = 'row static';
-
       let mailPill = '';
       if (t.status === 'FAILED') {
-        mailPill = t.failureEmailSent
-          ? '<span class="pill mail-sent">Email sent</span>'
-          : '<span class="pill mail-pending">Email pending</span>';
+        mailPill = t.failureEmailSent ? '<span class="pill mail-sent">Email sent</span>' : '<span class="pill mail-pending">Email pending</span>';
       }
-
       row.innerHTML = `
         <div class="row-main">
           <div class="row-email mono">${t.stripeChargeId || t.stripeCustomerId || 'no stripe id'}</div>
@@ -731,11 +797,9 @@
           ${mailPill}
           <span class="pill ${t.status.toLowerCase()}">${t.status}</span>
           <span class="amount">${formatMoney(t.amountInCents, t.currency)}</span>
-        </div>
-      `;
+        </div>`;
       list.appendChild(row);
     });
-
     renderPagination('tx', txPage, allTransactions);
   }
 
@@ -744,45 +808,38 @@
 
   async function submitChargeToCurrentCustomer() {
     if (!currentCustomer) return;
-
     const amountInCents = parseInt(el('charge-amount').value, 10);
     const currency = el('charge-currency').value.trim();
     const testToken = el('charge-token').value;
     const statusBox = el('charge-status');
     const btn = el('btn-submit-charge');
-
     btn.disabled = true;
     statusBox.innerHTML = '<div class="status-line mono">Sending to Stripe…</div>';
-
     try {
       const res = await fetch(`${API_BASE}/customers/${currentCustomer.id}/charge`, {
-        method: 'POST',
-        headers: authHeaders({ 'Content-Type': 'application/json' }),
+        method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ amountInCents, currency, testToken })
       });
       if (res.status === 401) return handleUnauthorized();
       if (!res.ok) throw new Error(`Server responded ${res.status}`);
       const tx = await res.json();
-
       statusBox.innerHTML = tx.status === 'SUCCEEDED'
         ? `<div class="status-line ok">✓ charge ${tx.stripeChargeId} succeeded</div>`
         : `<div class="status-line err">✕ charge failed — no funds captured</div>`;
-
       openCustomer(currentCustomer.id, currentCustomer.email);
     } catch (err) {
       statusBox.innerHTML = `<div class="status-line err">✕ ${err.message}</div>`;
-    } finally {
-      btn.disabled = false;
-    }
+    } finally { btn.disabled = false; }
   }
 
-  // ---------- NEW CUSTOMER + CHARGE ----------
+  // ---------- NEW CUSTOMER ----------
 
-  function openNewCharge() {
-    show('screen-new-charge');
+  el('btn-new-charge').onclick = () => {
+    navigateTo('new-charge');
     el('new-charge-status').innerHTML = '';
     el('new-email').value = '';
-  }
+  };
+  el('btn-cancel-new').onclick = () => navigateTo('customers');
 
   async function submitNewCharge() {
     const email = el('new-email').value.trim();
@@ -791,43 +848,29 @@
     const testToken = el('new-token').value;
     const statusBox = el('new-charge-status');
     const btn = el('btn-submit-new');
-
-    if (!email) {
-      statusBox.innerHTML = '<div class="status-line err">✕ enter a customer email first</div>';
-      return;
-    }
-
+    if (!email) { statusBox.innerHTML = '<div class="status-line err">✕ enter a customer email first</div>'; return; }
     btn.disabled = true;
     statusBox.innerHTML = '<div class="status-line mono">Sending to Stripe…</div>';
-
     try {
       const res = await fetch(`${API_BASE}/charges`, {
-        method: 'POST',
-        headers: authHeaders({ 'Content-Type': 'application/json' }),
+        method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ email, amountInCents, currency, testToken })
       });
       if (res.status === 401) return handleUnauthorized();
       if (!res.ok) throw new Error(`Server responded ${res.status}`);
       await res.json();
-
-      loadCustomers();
+      navigateTo('customers');
     } catch (err) {
       statusBox.innerHTML = `<div class="status-line err">✕ ${err.message}</div>`;
       btn.disabled = false;
     }
   }
 
-  // ---------- WIRE UP ----------
-
-  el('btn-new-charge').onclick = openNewCharge;
-  el('btn-cancel-new').onclick = loadCustomers;
   el('btn-submit-new').onclick = submitNewCharge;
   el('btn-submit-charge').onclick = submitChargeToCurrentCustomer;
   el('btn-login').onclick = submitLogin;
   el('btn-logout').onclick = logout;
   el('btn-theme-toggle').onclick = toggleTheme;
-
-  el('btn-theme-toggle').textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '◐' : '◑';
 
   checkAuthAndInit();
 </script>

@@ -1,6 +1,7 @@
 package com.example.billingengine.controller;
 
 import com.example.billingengine.dto.ChargeRequest;
+import com.example.billingengine.dto.CreateCustomerRequest;
 import com.example.billingengine.dto.StripeCustomerSummary;
 import com.example.billingengine.entity.Transaction;
 import com.example.billingengine.entity.TransactionStatus;
@@ -64,5 +65,11 @@ public class CustomerController {
     public ResponseEntity<Transaction> chargeCustomer(@PathVariable String stripeCustomerId, @RequestBody ChargeRequest request) {
         Transaction tx = billingService.chargeExistingStripeCustomer(stripeCustomerId, request.getAmountInCents(), request.getCurrency(), request.getTestToken());
         return ResponseEntity.ok(tx);
+    }
+
+    @PostMapping
+    public ResponseEntity<com.example.billingengine.entity.Customer> createCustomer(@RequestBody CreateCustomerRequest request) {
+        com.example.billingengine.entity.Customer customer = billingService.createCustomerOnly(request.getEmail());
+        return ResponseEntity.ok(customer);
     }
 }

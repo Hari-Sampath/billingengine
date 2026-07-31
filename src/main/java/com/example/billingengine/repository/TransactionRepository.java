@@ -9,4 +9,5 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     List<Transaction> findByStatusAndFailureEmailSentFalse(TransactionStatus status);
     List<Transaction> findByCustomerEmailOrderByCreatedAtDesc(String customerEmail);
+    List<Transaction> findTop10ByOrderByCreatedAtDesc();
 }
